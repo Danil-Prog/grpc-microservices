@@ -1,0 +1,5 @@
+/.idea/
+/backend/.gradle/
+/backend/gradle/
+/backend/.kotlin/
+/backend/build/
