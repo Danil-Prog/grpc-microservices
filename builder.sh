@@ -3,6 +3,8 @@
 profile=$1
 arg=$2
 
+container="mobile/backend"
+
 help="
 Use profile:
   --dev
@@ -24,13 +26,18 @@ function clean() {
 
 function upgrade() {
   echo "upgrade instance profile: ${profile}"
-  git pull
+#  git pull
 
-  cd docker
-  docker compose -f docker-compose.${profile}.yml stop backend-$profile
+  docker compose -f docker/docker-compose."${profile}".yml stop backend-"$profile"
 
   echo "Build backend image..."
-  gradle -p backend/ jibDockerBuild -Djib.to.tags=$profile &> /dev/null
+  build=$(gradle -p backend/ jibDockerBuild -Djib.to.image="${container}:${profile}")
+  result=$(echo "${build}" | grep -e 'BUILD SUCCESSFUL')
+
+  if [[ $result =~ "BUILD SUCCESSFUL" ]]; then
+      echo "rmi <none> images"
+      docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+  fi
 }
 
 case $profile in
