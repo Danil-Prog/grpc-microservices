@@ -5,8 +5,8 @@ arg=$2
 
 help="
 Use profile:
-  --develop
-  --production
+  --dev
+  --prod
 
 Parameters:
 
@@ -24,17 +24,24 @@ function clean() {
 
 function upgrade() {
   echo "upgrade instance profile: ${profile}"
+  git pull
+
+  cd docker
+  docker compose -f docker-compose.${profile}.yml stop backend-$profile
+
+  echo "Build backend image..."
+  gradle -p backend/ jibDockerBuild -Djib.to.tags=$profile &> /dev/null
 }
 
 case $profile in
-  '--develop')
+  '--dev')
     echo 'profile active: [develop]'
-    profile='develop'
+    profile='dev'
   ;;
 
-  '--production')
+  '--prod')
     echo 'profile active: [production]'
-    profile='production'
+    profile='prod'
   ;;
 
   *)
@@ -54,6 +61,7 @@ case $arg in
 
   '--upgrade' | '-u')
     echo welcome to upgrade!
+    upgrade
   ;;
 
   '--run')
