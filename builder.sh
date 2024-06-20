@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Define color codes
+r='\033[0;31m' # red
+g='\033[0;32m' # green
+y='\033[0;33m' # yellow
+nc='\033[0m'   # No Color
+
 profile=$1
 arg=$2
 
@@ -19,40 +25,62 @@ Parameters:
   --run                  :build backend image and startup application
 "
 
+#-------Logger
+function info() {
+    echo -e "${g}[$(date '+%Y-%m-%d %H:%M:%S')][        ][INFO]: ${1}${nc}"
+}
+
+function warning() {
+    echo -e "${y}[$(date '+%Y-%m-%d %H:%M:%S')][        ][WARNING]: ${1}${nc}"
+}
+
+function error() {
+    echo -e "${r}[$(date '+%Y-%m-%d %H:%M:%S')][        ][ERROR]: ${1}${nc}"
+}
+#-------
+
 function clean() {
   echo "clean instance for profile: ${profile}"
 
 }
 
+# Подтягивает изменения из гита
+# Останавливает контейнер, обновляет, подчищает старые образы и перезапускает
 function upgrade() {
-  echo "upgrade instance profile: ${profile}"
+  workflowID="${1}"
+  info "Upgrade instance profile: ${profile}, build=${workflowID}"
 #  git pull
 
-  docker compose -f docker/docker-compose."${profile}".yml stop backend-"$profile"
+  docker compose -f docker/docker-compose."${profile}".yml stop backend-"${profile}"
 
-  echo "Build backend image..."
+  info "Build backend image..."
   build=$(gradle -p backend/ jibDockerBuild -Djib.to.image="${container}:${profile}")
   result=$(echo "${build}" | grep -e 'BUILD SUCCESSFUL')
 
   if [[ $result =~ "BUILD SUCCESSFUL" ]]; then
-      echo "rmi <none> images"
-      docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+    info "Clean unused images"
+    docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+  else
+    error "Failed to build new image!"
   fi
+
+  info "Restart docker container..."
+  docker compose -f docker/docker-compose."${profile}".yml run backend-"${profile}"
 }
 
 case $profile in
   '--dev')
-    echo 'profile active: [develop]'
+    info "profile active: [develop]"
     profile='dev'
   ;;
 
   '--prod')
-    echo 'profile active: [production]'
+    info "profile active: [production]"
     profile='prod'
   ;;
 
   *)
-    echo '[ERROR] please, set profile --develop or --production'
+    error "please, set profile --develop or --production"
     exit
 esac
 
@@ -67,8 +95,7 @@ case $arg in
   ;;
 
   '--upgrade' | '-u')
-    echo welcome to upgrade!
-    upgrade
+    upgrade $3
   ;;
 
   '--run')
@@ -76,6 +103,6 @@ case $arg in
   ;;
 
   *)
-    echo '[ERROR] unknown argument'
+    error "unknown argument"
     echo "$help"
 esac
