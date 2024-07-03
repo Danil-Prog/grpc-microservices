@@ -6,16 +6,11 @@ g='\033[0;32m' # green
 y='\033[0;33m' # yellow
 nc='\033[0m'   # No Color
 
-profile=$1
-arg=$2
+arg=$1
 
 container="mobile/backend"
 
 help="
-Use profile:
-  --dev
-  --prod
-
 Parameters:
 
   --help(-h)             :print help message
@@ -40,21 +35,27 @@ function error() {
 #-------
 
 function clean() {
-  echo "clean instance for profile: ${profile}"
+  docker ps -aq | xargs -r docker stop
 
+  warning "Running command remove all containers"
+  docker rm -f $(docker -a -q)
+
+  docker volume prune -f
 }
 
 # Подтягивает изменения из гита
 # Останавливает контейнер, обновляет, подчищает старые образы и перезапускает
 function upgrade() {
   workflowID="${1}"
-  info "Upgrade instance profile: ${profile}, build=${workflowID}"
+  export IMAGE_BUILD=$workflowID
+
+  info "Running upgrade instance... build=${workflowID}"
 #  git pull
 
-  docker compose -f docker/docker-compose."${profile}".yml stop backend-"${profile}"
+  docker compose -f docker/docker-compose.dev.yml stop backend
 
   info "Build backend image..."
-  build=$(gradle -p backend/ jibDockerBuild -Djib.to.image="${container}:${profile}")
+  build=$(gradle -p backend/ jibDockerBuild -Djib.to.image="${container}:${workflowID}")
   result=$(echo "${build}" | grep -e 'BUILD SUCCESSFUL')
 
   if [[ $result =~ "BUILD SUCCESSFUL" ]]; then
@@ -65,24 +66,8 @@ function upgrade() {
   fi
 
   info "Restart docker container..."
-  docker compose -f docker/docker-compose."${profile}".yml run backend-"${profile}"
+  docker compose -f docker/docker-compose.dev.yml run backend
 }
-
-case $profile in
-  '--dev')
-    info "profile active: [develop]"
-    profile='dev'
-  ;;
-
-  '--prod')
-    info "profile active: [production]"
-    profile='prod'
-  ;;
-
-  *)
-    error "please, set profile --develop or --production"
-    exit
-esac
 
 case $arg in
 
@@ -91,11 +76,11 @@ case $arg in
   ;;
 
   '--clean' | '-c')
-    echo welcome to clean!
+    clean
   ;;
 
   '--upgrade' | '-u')
-    upgrade $3
+    upgrade $2
   ;;
 
   '--run')

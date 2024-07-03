@@ -1,0 +1,20 @@
+name: upgrade
+on:
+  push:
+    branches: ['develop']
+
+jobs:
+  upgrade-backend:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: upgrade
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST_IP }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: ${{ secrets.PORT }}
+
+          script: |
+            ./builder.sh --${{ github.REF_NAME }} --upgrade ${{ github.GITHUB_RUN_ATTEMPT }}
