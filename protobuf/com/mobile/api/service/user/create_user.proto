@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package com.mobile.api.service.user;
+
+import "com/mobile/api/model/user/user.proto";
+
+option java_multiple_files = true;
+
+message CreateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message CreateUserResponse {
+  com.mobile.api.model.user.User user = 1;
+}

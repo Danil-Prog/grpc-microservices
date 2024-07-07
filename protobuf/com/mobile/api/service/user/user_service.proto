@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package com.mobile.api.service;
+
+import "com/mobile/api/service/user/create_user.proto";
+
+option java_multiple_files = true;
+
+service UserService {
+    rpc createUser(CreateUserRequest) returns (CreateUserResponse);
+}
