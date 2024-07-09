@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package com.mobile.api.service;
+package com.mobile.api.service.user;
 
 import "com/mobile/api/service/user/create_user.proto";
 

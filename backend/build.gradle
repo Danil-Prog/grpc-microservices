@@ -40,9 +40,14 @@ dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
     /* Protobuf implementation */
-    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
-    implementation "io.grpc:grpc-stub:${grpcVersion}"
-    implementation "com.google.protobuf:protobuf-kotlin:4.27.2"
+    implementation 'io.grpc:grpc-kotlin-stub:1.4.1'
+    implementation 'io.grpc:grpc-protobuf:1.64.0'
+    implementation 'io.grpc:grpc-services:1.64.0'
+    implementation 'com.google.protobuf:protobuf-kotlin:4.27.2'
+
+    implementation 'io.grpc:grpc-netty-shaded:1.65.0'
+
+    protobuf files(new File("${rootProject.projectDir.parent}/protobuf"))
 
     /* Test implementation */
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -72,18 +77,19 @@ protobuf {
     }
 
     plugins {
-        'grpckt' {
-            artifact = 'io.grpc:protoc-gen-grpc-kotlin:1.4.1'
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.32.1'
+        }
+        grpckt {
+            artifact = 'io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar'
         }
     }
 
     generateProtoTasks {
-        ofSourceSet("main").each {
+        all().forEach {
             it.plugins {
-                'grpckt'
-            }
-            it.builtins {
-                "kotlin"
+                grpc
+                grpckt
             }
         }
     }
