@@ -2,9 +2,14 @@ import java.time.Instant
 
 buildscript {
     ext {
+
+        kotlinVersion = '2.0.0'
+
         protobufVersion = '3.23.4'
         protobufPluginVersion = '0.9.4'
         grpcVersion = '1.65.0'
+
+        grpcKotlin = '1.4.1'
     }
 }
 
@@ -12,8 +17,8 @@ plugins {
     id 'org.springframework.boot' version '3.3.0'
     id 'io.spring.dependency-management' version '1.1.5'
 
-    id 'org.jetbrains.kotlin.jvm' version '2.0.0'
-    id 'org.jetbrains.kotlin.plugin.spring' version '2.0.0'
+    id 'org.jetbrains.kotlin.jvm' version "${kotlinVersion}"
+    id 'org.jetbrains.kotlin.plugin.spring' version "${kotlinVersion}"
 
     id 'com.google.cloud.tools.jib' version '3.4.0'
 
@@ -34,18 +39,20 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
 
-    /* Protobuf implementation */
-    implementation 'io.grpc:grpc-kotlin-stub:1.4.1'
-    implementation 'io.grpc:grpc-protobuf:1.64.0'
-    implementation 'io.grpc:grpc-services:1.64.0'
-    implementation 'com.google.protobuf:protobuf-kotlin:4.27.2'
+    /* GRPC implementation */
+    implementation "io.grpc:grpc-kotlin-stub:${grpcKotlin}"
+    implementation "io.grpc:grpc-protobuf:${grpcVersion}"
+    implementation "io.grpc:grpc-services:${grpcVersion}"
+    implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
 
-    implementation 'io.grpc:grpc-netty-shaded:1.65.0'
+    /* Protobuf implementation */
+    implementation 'com.google.protobuf:protobuf-kotlin:4.27.2'
+    implementation 'com.google.protobuf:protobuf-java:4.27.2'
 
     protobuf files(new File("${rootProject.projectDir.parent}/protobuf"))
 
@@ -78,10 +85,10 @@ protobuf {
 
     plugins {
         grpc {
-            artifact = 'io.grpc:protoc-gen-grpc-java:1.32.1'
+            artifact = "io.grpc:protoc-gen-grpc-java:${grpcVersion}"
         }
         grpckt {
-            artifact = 'io.grpc:protoc-gen-grpc-kotlin:1.4.1:jdk8@jar'
+            artifact = "io.grpc:protoc-gen-grpc-kotlin:${grpcKotlin}:jdk8@jar"
         }
     }
 
