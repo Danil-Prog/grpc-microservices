@@ -1,4 +1,4 @@
-package com.mobile.api.configuration
+package com.mobile.api.interceptor
 
 import io.grpc.Context
 import io.grpc.Contexts
@@ -7,11 +7,12 @@ import io.grpc.Metadata
 import io.grpc.ServerCall
 import io.grpc.ServerCallHandler
 import io.grpc.ServerInterceptor
+import net.devh.boot.grpc.server.interceptor.GrpcGlobalServerInterceptor
 import org.apache.logging.log4j.CloseableThreadContext
-import org.springframework.context.annotation.Configuration
+import org.slf4j.LoggerFactory
 import java.util.UUID
 
-@Configuration
+@GrpcGlobalServerInterceptor
 class DefaultGrpcInterceptor : ServerInterceptor {
 
     override fun <ReqT : Any?, RespT : Any?> interceptCall(
@@ -22,6 +23,7 @@ class DefaultGrpcInterceptor : ServerInterceptor {
         val context = Context.current()
         val requestId = UUID.randomUUID().toString()
 
+        logger.info(requestId) { "Call ID: $requestId" }
         return Contexts.interceptCall(context, call, data) { _, headers ->
             object : SimpleForwardingServerCallListener<ReqT>(hanler?.startCall(call, headers)) {
 
@@ -31,5 +33,9 @@ class DefaultGrpcInterceptor : ServerInterceptor {
                 }
             }
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(DefaultGrpcInterceptor::class.java)
     }
 }

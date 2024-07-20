@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.user;
+
+import "proto/mobile/api/service/user/create_user.proto";
+import "proto/mobile/api/service/user/update_user.proto";
+import "proto/mobile/api/service/user/delete_user.proto";
+
+option java_multiple_files = true;
+
+service UserService {
+    rpc createUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc updateUser(UpdateUserRequest) returns (UpdateUserResponse);
+    rpc deleteUserById(DeleteUserByIdRequest) returns (DeleteUserByIdResponse);
+}

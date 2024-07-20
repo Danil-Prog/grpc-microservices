@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.auth;
+
+option java_multiple_files = true;
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResponse {
+  string accessToken = 1;
+  string refreshToken = 2;
+}

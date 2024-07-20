@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.auth;
+
+option java_multiple_files = true;
+
+message RegistrationRequest {
+}
+
+message RegistrationResponse {
+}

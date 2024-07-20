@@ -5,11 +5,17 @@ buildscript {
 
         kotlinVersion = '2.0.0'
 
+        psqlVersion = '42.5.4'
+
         protobufVersion = '3.23.4'
         protobufPluginVersion = '0.9.4'
         grpcVersion = '1.65.0'
 
         grpcKotlin = '1.4.1'
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-noarg:$kotlinVersion"
     }
 }
 
@@ -38,11 +44,18 @@ repositories {
     mavenCentral()
 }
 
+apply plugin: "kotlin-jpa"
+
 dependencies {
     implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'
 
     implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
+
+    /* Database */
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.liquibase:liquibase-core'
+    runtimeOnly "org.postgresql:postgresql:${psqlVersion}"
 
     /* GRPC implementation */
     implementation "io.grpc:grpc-kotlin-stub:${grpcKotlin}"
@@ -61,6 +74,7 @@ dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
 }
 
 kotlin {
@@ -97,6 +111,9 @@ protobuf {
             it.plugins {
                 grpc
                 grpckt
+            }
+            it.builtins {
+                create("kotlin")
             }
         }
     }

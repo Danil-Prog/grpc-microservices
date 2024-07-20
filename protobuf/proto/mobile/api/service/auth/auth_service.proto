@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.auth;
+
+import "proto/mobile/api/service/auth/login.proto";
+import "proto/mobile/api/service/auth/registration.proto";
+option java_multiple_files = true;
+
+service AuthService {
+  rpc login(LoginRequest) returns (LoginResponse);
+  rpc registration(RegistrationRequest) returns (RegistrationResponse);
+}

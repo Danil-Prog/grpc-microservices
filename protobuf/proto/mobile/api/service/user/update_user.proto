@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.user;
+
+import "proto/mobile/api/model/user/user.proto";
+
+option java_multiple_files = true;
+
+message UpdateUserRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message UpdateUserResponse {
+  proto.mobile.api.model.user.User user = 1;
+}

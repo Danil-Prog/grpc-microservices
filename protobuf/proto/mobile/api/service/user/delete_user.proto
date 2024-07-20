@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package proto.mobile.api.service.user;
+
+import "proto/mobile/api/model/user/user.proto";
+
+option java_multiple_files = true;
+
+message DeleteUserByIdRequest {
+  uint64 userId = 1;
+}
+
+message DeleteUserByIdResponse {
+}
