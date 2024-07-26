@@ -32,6 +32,10 @@ function warning() {
 function error() {
     echo -e "${r}[$(date '+%Y-%m-%d %H:%M:%S')][        ][ERROR]: ${1}${nc}"
 }
+
+function emptyLine() {
+    echo -e "\n"
+}
 #-------
 
 function clean() {
@@ -50,7 +54,7 @@ function upgrade() {
   export IMAGE_BUILD=$workflowID
 
   info "Running upgrade instance... build=${workflowID}"
-#  git pull
+#  gitPull
 
   docker compose -f docker/docker-compose.dev.yml stop backend
 
@@ -69,6 +73,38 @@ function upgrade() {
   docker compose -f docker/docker-compose.dev.yml run backend
 }
 
+function run() {
+    gitPull
+
+    info "Generate protobuf contracts..."
+    gradle -p backend generateProto
+
+    info "Stop backend container"
+    docker compose -f docker/docker-compose.dev.yml down backend
+
+    info "Build jib docker image"
+    build=$(gradle -p backend/ jibDockerBuild -Djib.to.image="${container}:latest")
+
+    result=$(echo "${build}" | grep -e 'BUILD SUCCESSFUL')
+
+#    if [[ $result =~ "BUILD SUCCESSFUL" ]]; then
+##      info "Clean unused images"
+##      docker images -a | grep none | awk '{ print $3; }' | xargs docker rmi --force
+#    else
+#      error "Failed to build new image!"
+#    fi
+
+    info "Build and restart docker containers..."
+    docker compose -f docker/docker-compose.dev.yml build backend
+    docker compose -f docker/docker-compose.dev.yml up -d backend
+}
+
+function gitPull() {
+    info "Upgrade project from repository Github"
+    git pull
+    emptyLine
+}
+
 case $arg in
 
   '--help' | '-h')
@@ -84,7 +120,7 @@ case $arg in
   ;;
 
   '--run')
-    echo welcome to run!
+    run
   ;;
 
   *)

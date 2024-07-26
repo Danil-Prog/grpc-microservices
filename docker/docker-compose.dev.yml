@@ -1,18 +1,8 @@
 services:
 
-  backend:
-    image: mobile/backend:$IMAGE_BUILD
-    container_name: mobile/backend
-    environment:
-      POSTGRES_DB: "${DATABASE_DB}"
-      POSTGRES_USER: "${DATABASE_USERNAME}"
-      POSTGRES_PASSWORD: "${DATABASE_PASSWORD}"
-    ports:
-      - "${DATABASE_PORT}:5432"
-
   postgresql:
     image: postgres:16.3
-    container_name: psql-server
+    container_name: psql_server
     environment:
       POSTGRES_DB: "${DATABASE_DB}"
       POSTGRES_USER: "${DATABASE_USERNAME}"
@@ -21,3 +11,25 @@ services:
       - "${DATABASE_PORT}:5432"
     volumes:
       - $HOME/psql-data:/var/lib/postgresql/data
+    networks:
+      - mobile-application
+
+  backend:
+    image: mobile/backend:latest
+    container_name: backend
+    environment:
+      SPRING_DATASOURCE_URL: "jdbc:postgresql://psql_server:5432/${DATABASE_DB}"
+      SPRING_DATASOURCE_USERNAME: "${DATABASE_USERNAME}"
+      SPRING_DATASOURCE_PASSWORD: "${DATABASE_PASSWORD}"
+    ports:
+      - "9090:9090"
+    depends_on:
+      - postgresql
+    links:
+      - "postgresql"
+    networks:
+      - mobile-application
+    restart: always
+
+networks:
+  mobile-application:
