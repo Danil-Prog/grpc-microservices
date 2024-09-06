@@ -3,15 +3,15 @@ import java.time.Instant
 buildscript {
     ext {
 
-        kotlinVersion = '2.0.0'
+        kotlinVersion = "2.0.0"
 
-        psqlVersion = '42.5.4'
+        psqlVersion = "42.7.4"
 
-        protobufVersion = '3.23.4'
-        protobufPluginVersion = '0.9.4'
-        grpcVersion = '1.65.0'
+        protobufVersion = "3.23.4"
+        protobufPluginVersion = "0.9.4"
+        grpcVersion = "1.65.0"
 
-        grpcKotlin = '1.4.1'
+        grpcKotlin = "1.4.1"
     }
 
     dependencies {
@@ -20,19 +20,19 @@ buildscript {
 }
 
 plugins {
-    id 'org.springframework.boot' version '3.3.0'
-    id 'io.spring.dependency-management' version '1.1.5'
+    id "org.springframework.boot" version "3.3.0"
+    id "io.spring.dependency-management" version "1.1.5"
 
-    id 'org.jetbrains.kotlin.jvm' version "${kotlinVersion}"
-    id 'org.jetbrains.kotlin.plugin.spring' version "${kotlinVersion}"
+    id "org.jetbrains.kotlin.jvm" version "${kotlinVersion}"
+    id "org.jetbrains.kotlin.plugin.spring" version "${kotlinVersion}"
 
-    id 'com.google.cloud.tools.jib' version '3.4.0'
+    id "com.google.cloud.tools.jib" version "3.4.0"
 
-    id 'com.google.protobuf' version "${protobufPluginVersion}"
+    id "com.google.protobuf" version "${protobufPluginVersion}"
 }
 
-group = 'com.mobile.api'
-version = '0.0.1'
+group = "com.mobile.api"
+version = "0.0.1"
 
 java {
     toolchain {
@@ -47,15 +47,15 @@ repositories {
 apply plugin: "kotlin-jpa"
 
 dependencies {
-    implementation 'net.devh:grpc-spring-boot-starter:3.1.0.RELEASE'
+    implementation "net.devh:grpc-spring-boot-starter:3.1.0.RELEASE"
 
-    implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
-    implementation 'org.jetbrains.kotlin:kotlin-reflect'
+    implementation "com.fasterxml.jackson.module:jackson-module-kotlin"
+    implementation "org.jetbrains.kotlin:kotlin-reflect"
 
     /* Database */
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.liquibase:liquibase-core'
-    runtimeOnly "org.postgresql:postgresql:${psqlVersion}"
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa"
+    implementation "org.liquibase:liquibase-core"
+    implementation "org.postgresql:postgresql:${psqlVersion}"
 
     /* GRPC implementation */
     implementation "io.grpc:grpc-kotlin-stub:${grpcKotlin}"
@@ -64,26 +64,26 @@ dependencies {
     implementation "io.grpc:grpc-netty-shaded:${grpcVersion}"
 
     /* Protobuf implementation */
-    implementation 'com.google.protobuf:protobuf-kotlin:4.27.2'
-    implementation 'com.google.protobuf:protobuf-java:4.27.2'
+    implementation "com.google.protobuf:protobuf-kotlin:4.27.2"
+    implementation "com.google.protobuf:protobuf-java:4.27.2"
 
     protobuf files(new File("${rootProject.projectDir.parent}/protobuf"))
 
     /* Test implementation */
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+    testImplementation "org.springframework.boot:spring-boot-starter-test"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit5"
 
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 }
 
 kotlin {
     compilerOptions {
-        freeCompilerArgs.addAll '-Xjsr305=strict'
+        freeCompilerArgs.addAll "-Xjsr305=strict"
     }
 }
 
-tasks.named('test') {
+tasks.named("test") {
     useJUnitPlatform()
 }
 
@@ -119,7 +119,7 @@ protobuf {
     }
 }
 
-tasks.register('welcome') {
+tasks.register("welcome") {
     doLast {
         println("My custom task")
     }
