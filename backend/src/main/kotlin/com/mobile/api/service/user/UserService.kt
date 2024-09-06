@@ -18,7 +18,6 @@ class UserService(
     fun createUser(request: CreateUserRequest): UserProto {
         val user = User.fromProtobuf(request.user)
         userValidate.validate(user)
-
         val savedUser = userRepository.save(user)
 
         return User.toProtobuf(savedUser)
